@@ -28,7 +28,8 @@ define KernelPackage/can
 	CONFIG_CAN_SOFTING=n \
 	CONFIG_NET_EMATCH_CANID=n \
 	CONFIG_CAN_DEBUG_DEVICES=n
-  FILES:=$(LINUX_DIR)/drivers/net/can/can-dev.ko \
+  FILES:=$(LINUX_DIR)/drivers/net/can/can-dev.ko@lt5.4 \
+	 $(LINUX_DIR)/drivers/net/can/dev/can-dev.ko@ge5.4 \
 	 $(LINUX_DIR)/net/can/can.ko
   AUTOLOAD:=$(call AutoProbe,can can-dev)
 endef
@@ -144,6 +145,23 @@ define KernelPackage/can-gw/description
 endef
 
 $(eval $(call KernelPackage,can-gw))
+
+
+define KernelPackage/can-mcp251x
+  TITLE:=MCP251x SPI CAN controller
+  KCONFIG:=\
+	CONFIG_SPI=y \
+	CONFIG_CAN_MCP251X
+  FILES:=$(LINUX_DIR)/drivers/net/can/spi/mcp251x.ko
+  AUTOLOAD:=$(call AutoProbe,can-mcp251x)
+  $(call AddDepends/can)
+endef
+
+define KernelPackage/can-mcp251x/description
+ Microchip MCP251x SPI CAN controller
+endef
+
+$(eval $(call KernelPackage,can-mcp251x))
 
 
 define KernelPackage/can-raw
